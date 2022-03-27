@@ -202,9 +202,10 @@ public class LoanGUI extends JFrame{
         printTable.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                System.out.println("graph=" + a.getGraph());
                 if(a.getGraph() == 1)
                     a.linear(false); // linear(graph(true/false))
-                if(a.getGraph() == 2){
+                else if(a.getGraph() == 2){
                     a.annuity(false);
                 }
                 else{
@@ -217,6 +218,11 @@ public class LoanGUI extends JFrame{
             public void actionPerformed(ActionEvent e) {
                 if(a.getGraph() == 1)
                     a.linear(true); // linear(graph(true/false))
+                else if(a.getGraph() == 2)
+                    a.annuity(true);
+                else{
+                    System.out.println("ERROR - select a graph2");
+                }
 
             }
         });

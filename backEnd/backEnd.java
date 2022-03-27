@@ -7,6 +7,10 @@ import org.jfree.chart.JFreeChart;
 import org.jfree.data.category.DefaultCategoryDataset;
 import org.jfree.ui.RefineryUtilities;
 
+import java.io.FileWriter;
+import java.io.IOException;
+import java.lang.Math.*;
+
 public class backEnd {
         // graph: 0=no input. 1=linear. 2=annuity.  startM, endM - starting and ending month. post - postpone how many months
     private int months, graph, startM, endM, post;
@@ -53,7 +57,6 @@ public class backEnd {
     }
 
 
-
     // linear calculator
     public void linear(boolean g){
         int totalM = post + months;
@@ -83,7 +86,6 @@ public class backEnd {
         for(int i = 0; i < totalM; i++){
             total += TableBase[i] + TableRate[i];
         }
-        System.out.println("You will have to pay " + total);
 
         for(int i = 0; i < totalM; i++){
             if(total > TableBase[i] + TableRate[i]){
@@ -100,10 +102,23 @@ public class backEnd {
             }
         }
 
-        for(int i = startM; i <= endM; ++i){
-            System.out.println("" + (i+1) + " months payment:");
-            System.out.println("   Payed = " + (TableBase[i]+TableRate[i]) + "; Left to pay = " + TableTotal[i]);
-            System.out.println("   Base payment = " + TableBase[i] + "; Rate payment = " + TableRate[i]);
+
+        try{
+            FileWriter of = new FileWriter("res.txt");
+
+            for(int i = startM; i <= endM; ++i){
+                System.out.println("" + (i+1) + " months payment:");
+                System.out.println("   Payed = " + (TableBase[i]+TableRate[i]) + "; Left to pay = " + TableTotal[i]);
+                System.out.println("   Base payment = " + TableBase[i] + "; Rate payment = " + TableRate[i]);
+
+                of.write("" + (i+1) + " months payment:\n");
+                of.write("   Payed = " + (TableBase[i]+TableRate[i]) + "; Left to pay = " + TableTotal[i] + '\n');
+                of.write("   Base payment = " + TableBase[i] + "; Rate payment = " + TableRate[i] + "\n\n");
+            }
+
+            of.close();
+        }catch(IOException exception){
+            System.out.println("FILE OUTPUT ERROR");
         }
 
         if(g == true){  // print chart/graph
@@ -115,12 +130,74 @@ public class backEnd {
 
     }
 
-      public void annuity(boolean g){
+    public void annuity(boolean g){
+        int totalM = post + months;
+        if(endM == 0){
+            endM = totalM-1;
+        }
+        double baseMPayment = amount / (double) months;
 
-      }
+        // monthly interest rate:
+        double MIR = YIR/12;
 
-    //  public void printChart(){}
+        double[] TableBase = new double[totalM];
+        double[] TableRate = new double[totalM];
+        double[] TableTotal = new double[totalM];
+
+        for(int i = 0; i < post; ++i){
+            TableBase[i] = 0;
+            TableRate[i] = baseMPayment*(postP*0.01);
+        }
+        for(int i = post; i < totalM; i++){
+            TableBase[i] = baseMPayment;
+            TableRate[i] = amount/(((Math.pow((1+MIR), (i-post)))/MIR)-1);
+        }
+
+        double total=0; // how much is left to pay
 
 
+        for(int i = 0; i < totalM; i++){
+            total += TableBase[i] + TableRate[i];
+        }
 
+        for(int i = 0; i < totalM; i++){
+            if(total > TableBase[i] + TableRate[i]){
+                total -= TableBase[i] + TableRate[i];
+                TableTotal[i] = total;
+                if(total < 0.1){
+                    total = 0;
+                    TableTotal[i] = 0;
+                }
+            }
+            else{
+                total = 0; // nothing left to pay
+                TableTotal[i] = 0;
+            }
+        }
+
+        try{
+            FileWriter of = new FileWriter("res.txt");
+
+            for(int i = startM; i <= endM; ++i){
+                System.out.println("" + (i+1) + " months payment:");
+                System.out.println("   Payed = " + (TableBase[i]+TableRate[i]) + "; Left to pay = " + TableTotal[i]);
+                System.out.println("   Base payment = " + TableBase[i] + "; Rate payment = " + TableRate[i]);
+
+                of.write("" + (i+1) + " months payment:\n");
+                of.write("   Payed = " + (TableBase[i]+TableRate[i]) + "; Left to pay = " + TableTotal[i] + '\n');
+                of.write("   Base payment = " + TableBase[i] + "; Rate payment = " + TableRate[i] + "\n\n");
+            }
+
+            of.close();
+        }catch(IOException exception){
+            System.out.println("FILE OUTPUT ERROR");
+        }
+
+        if(g == true){  // print chart/graph
+            Chart chart = new Chart("Line chart" , "Amount payed in specified months", months, startM, endM, TableBase, TableRate);
+            chart.pack( );
+            RefineryUtilities.centerFrameOnScreen( chart );
+            chart.setVisible( true );
+        }
+    }
 }
