@@ -1,6 +1,7 @@
 package GUI;
 
 import backEnd.*;
+import org.jfree.ui.RefineryUtilities;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -95,7 +96,6 @@ public class LoanGUI extends JFrame{
                     OK = false;
                 }
 
-
                 // if user sets custom range of months to print out
                 if(customButton.isSelected()){
 
@@ -105,7 +105,7 @@ public class LoanGUI extends JFrame{
                     try{
                         monthsParsed = Integer.parseInt(text);
                         if(monthsParsed >= 1 && monthsParsed <= a.getMonths()){
-                            a.setStartM(monthsParsed);
+                            a.setStartM(monthsParsed-1);
                         }
                         else{
                             startMonth.setText("ERROR");
@@ -122,8 +122,8 @@ public class LoanGUI extends JFrame{
                     text = endMonth.getText();
                     try{
                         monthsParsed = Integer.parseInt(text);
-                        if(monthsParsed >= a.getSM() && monthsParsed <= a.getMonths()){
-                            a.setEndM(monthsParsed);
+                        if(monthsParsed-1 >= a.getSM() && monthsParsed <= a.getMonths()){
+                            a.setEndM(monthsParsed-1);
                         }
                         else{
                             endMonth.setText("ERROR");
@@ -135,8 +135,6 @@ public class LoanGUI extends JFrame{
                         OK = false;
                     }
                 }
-
-
 
                 // if user wants to postpone payments
                 if(postButton.isSelected()){
@@ -178,8 +176,6 @@ public class LoanGUI extends JFrame{
                     }
                 }
 
-
-
                 //radio buttons:
                 if(AGButton.isSelected()){
                     a.setGraph(2);
@@ -191,12 +187,6 @@ public class LoanGUI extends JFrame{
                     status.setText("Error: please select a graph");
                     a.setGraph(0);
                 }
-
-                // postpone button
-                //if(postButton.isSelected()){
-
-                //}
-
 
                 // validation
                 if(OK == false){
@@ -212,13 +202,31 @@ public class LoanGUI extends JFrame{
         printTable.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                if(a.getGraph() == 1)
+                    a.linear(false); // linear(graph(true/false))
+                if(a.getGraph() == 2){
+                    a.annuity(false);
+                }
+                else{
+                    System.out.println("ERROR - select a graph");
+                }
+            }
+        });
+        printChart.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if(a.getGraph() == 1)
+                    a.linear(true); // linear(graph(true/false))
 
             }
         });
     }
+
+
     public static void main(String[] args){
         JFrame frame = new LoanGUI("Loan calculator");
         frame.setVisible(true);
+
     }
 
 }
