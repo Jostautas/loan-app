@@ -1,7 +1,7 @@
+//Jostautas Sakas
 package GUI;
 
 import backEnd.*;
-import org.jfree.ui.RefineryUtilities;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -33,6 +33,7 @@ public class LoanGUI extends JFrame{
     private JLabel postTLabel;
     private JLabel postPLabel;
     private JCheckBox customButton;
+    private JButton displTable;
 
     static public backEnd a = new backEnd();
 
@@ -204,30 +205,43 @@ public class LoanGUI extends JFrame{
             public void actionPerformed(ActionEvent e) {
                 System.out.println("graph=" + a.getGraph());
                 if(a.getGraph() == 1)
-                    a.linear(false); // linear(graph(true/false))
+                    a.linear(false, false); // linear(graph(true/false))
                 else if(a.getGraph() == 2){
-                    a.annuity(false);
+                    a.annuity(false, false);
                 }
                 else{
                     System.out.println("ERROR - select a graph");
                 }
             }
         });
+
         printChart.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if(a.getGraph() == 1)
-                    a.linear(true); // linear(graph(true/false))
+                    a.linear(true, false); // linear(graph(true/false))
                 else if(a.getGraph() == 2)
-                    a.annuity(true);
+                    a.annuity(true, false);
                 else{
                     System.out.println("ERROR - select a graph2");
                 }
 
             }
         });
+        displTable.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if(a.getGraph() == 1)
+                    a.linear(false, true); // linear(no linear graph, display table)
+                else if(a.getGraph() == 2){
+                    a.annuity(false, true);
+                }
+                else{
+                    System.out.println("ERROR3 - select a graph");
+                }
+            }
+        });
     }
-
 
     public static void main(String[] args){
         JFrame frame = new LoanGUI("Loan calculator");

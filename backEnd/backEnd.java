@@ -1,6 +1,7 @@
 package backEnd;
 
 import GUI.Chart;
+import GUI.Table;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -17,21 +18,11 @@ public class backEnd {
 
     //YearInterestRates. postponeProcentage
     private double amount, YIR, postP;
-    public void setAmount(double amount){
-        this.amount = amount;
-    }
-    public void setMonths(int months){
-        this.months = months;
-    }
-    public void setYears(int years){
-        months += 12*years;
-    }
-    public void setGraph(int graph){
-        this.graph = graph;
-    }
-    public void setInterestRate(double YIR){
-        this.YIR = YIR;
-    }
+    public void setAmount(double amount){ this.amount = amount; }
+    public void setMonths(int months){ this.months = months; }
+    public void setYears(int years){ months += 12*years; }
+    public void setGraph(int graph){ this.graph = graph; }
+    public void setInterestRate(double YIR){ this.YIR = YIR; }
     public void setStartM(int startM){ this.startM = startM; }
     public void setEndM(int endM){ this.endM = endM; }
     public void setPost(int post){ this.post = post; }
@@ -39,7 +30,10 @@ public class backEnd {
 
     public int getMonths(){ return months; }
     public int getSM(){ return startM; }
+    public int getEM(){ return endM; }
     public int getGraph(){ return graph; }
+
+    private Table table;
 
     public void printData(){    // prints the payment data of all specified months (from x to y)
         System.out.println("amount=" + amount);
@@ -58,7 +52,7 @@ public class backEnd {
 
 
     // linear calculator
-    public void linear(boolean g){
+    public void linear(boolean g, boolean t){ // g-line graph, t-table
         int totalM = post + months;
         if(endM == 0){
             endM = totalM-1;
@@ -121,16 +115,20 @@ public class backEnd {
             System.out.println("FILE OUTPUT ERROR");
         }
 
-        if(g == true){  // print chart/graph
+        if(g){  // print chart/graph
             Chart chart = new Chart("Line chart" , "Amount payed in specified months", months, startM, endM, TableBase, TableRate);
             chart.pack( );
             RefineryUtilities.centerFrameOnScreen( chart );
             chart.setVisible( true );
         }
 
+        if(t){
+            table = new Table(TableBase, TableRate, TableTotal);
+        }
+
     }
 
-    public void annuity(boolean g){
+    public void annuity(boolean g, boolean t){
         int totalM = post + months;
         if(endM == 0){
             endM = totalM-1;
@@ -154,7 +152,6 @@ public class backEnd {
         }
 
         double total=0; // how much is left to pay
-
 
         for(int i = 0; i < totalM; i++){
             total += TableBase[i] + TableRate[i];
@@ -193,11 +190,15 @@ public class backEnd {
             System.out.println("FILE OUTPUT ERROR");
         }
 
-        if(g == true){  // print chart/graph
+        if(g){  // print chart/graph
             Chart chart = new Chart("Line chart" , "Amount payed in specified months", months, startM, endM, TableBase, TableRate);
             chart.pack( );
             RefineryUtilities.centerFrameOnScreen( chart );
             chart.setVisible( true );
+        }
+
+        if(t){
+            table = new Table(TableBase, TableRate, TableTotal);
         }
     }
 }
